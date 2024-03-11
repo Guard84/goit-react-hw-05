@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import fetchTrendingMovies from "../assets/requests/trending-api.js";
 import MovieList from '../components/MovieList/MovieList.jsx';
+import fetchMovieDetails from '../assets/requests/details-api.js';
 
 const HomePage = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -18,11 +20,15 @@ const HomePage = () => {
     fetchMovies();
   }, []);
 
-  const handleMovieClick = (movieId) => {
-    console.log(`Clicked movie with ID ${movieId}`);
-    // Тут ви можете робити що завгодно, наприклад, переходити на сторінку з деталями фільму
-  };
+  const handleMovieClick = async (movieId) => {
+    try {
+      const movieDetails = await fetchMovieDetails(movieId);
+      return <Link to={`/movies/${movieId}`} state={{ movieDetails }} />;
+    } catch (error) {
+      console.error("Error fetching movie details:", error);
+    }
 
+  };
   return (
     <div>
       <h2>Trending Today</h2>

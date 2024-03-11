@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import fetchMovieCredits from '../../assets/requests/credits-api';
+import { useParams } from 'react-router-dom';
 
-const MovieCast = ({ movieId, apiKey }) => {
+const baseUrl = 'https://image.tmdb.org/t/p/w500/';
+
+const MovieCast = () => {
+  const { movieId } = useParams();
   const [cast, setCast] = useState([]);
 
   useEffect(() => {
     const fetchCast = async () => {
       try {
-        const castData = await fetchMovieCredits(movieId, apiKey);
+        const castData = await fetchMovieCredits(movieId);
         setCast(castData);
       } catch (error) {
         console.error("Error fetching movie cast:", error);
@@ -15,14 +19,23 @@ const MovieCast = ({ movieId, apiKey }) => {
     };
 
     fetchCast();
-  }, [movieId, apiKey]);
+  }, [movieId]);
 
   return (
     <div>
-      <h2>Movie Cast</h2>
+      <h2>Cast</h2>
       <ul>
         {cast.map(actor => (
-          <li key={actor.id}>{actor.name}</li>
+          <li key={actor.id}>
+            {actor.profile_path && (
+              <img
+                src={`${baseUrl}${actor.profile_path}`}
+                alt={actor.name}
+                style={{ width: '100px', height: '150px' }}
+              />
+            )}
+            <p>{actor.name}</p>
+          </li>
         ))}
       </ul>
     </div>
@@ -30,4 +43,3 @@ const MovieCast = ({ movieId, apiKey }) => {
 };
 
 export default MovieCast;
-
