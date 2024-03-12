@@ -42,6 +42,7 @@ const MoviesPage = () => {
     }
     setSearchResults([]);
     handleSearch(keyword);
+    setKeyword('');
   };
 
   return (
