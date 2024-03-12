@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import fetchMoviesByKeyword from '../assets/requests/search-api';
+import fetchTrendingMovies from '../assets/requests/trending-api';
 import MovieList from '../components/MovieList/MovieList';
 import { useSearchParams } from 'react-router-dom';
 import css from "./MoviesPage.module.css";
@@ -8,6 +9,7 @@ const MoviesPage = () => {
   const [keyword, setKeyword] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState('');
+  const [trendingMovies, setTrendingMovies] = useState([]);
 
   const [searchParams] = useSearchParams();
   const urlKeyword = searchParams.get('keyword');
@@ -18,6 +20,19 @@ const MoviesPage = () => {
       handleSearch(urlKeyword);
     }
   }, [urlKeyword]);
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        const movies = await fetchTrendingMovies();
+        setTrendingMovies(movies);
+      } catch (error) {
+        console.error("Error fetching trending movies:", error);
+      }
+    };
+
+    fetchTrending();
+  }, []);
 
   const handleSearch = async (query) => {
     try {
@@ -58,6 +73,9 @@ const MoviesPage = () => {
         <button type="submit" className={css.btn}>Search</button>
       </form>
       {searchError && <p className={css.error}>{searchError}</p>}
+      <h2>Trending Today</h2>
+      <MovieList movies={trendingMovies} />
+      <h2>Search Results</h2>
       <MovieList movies={searchResults} />
     </div>
   );

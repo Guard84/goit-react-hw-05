@@ -8,19 +8,33 @@ const baseUrl = 'https://image.tmdb.org/t/p/w500/';
 const MovieCast = () => {
   const { movieId } = useParams();
   const [cast, setCast] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchCast = async () => {
+      setLoading(true);
       try {
         const castData = await fetchMovieCredits(movieId);
         setCast(castData);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching movie cast:", error);
+        setError('Error fetching movie cast. Please try again later.');
+        setLoading(false);
       }
     };
 
     fetchCast();
   }, [movieId]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div>

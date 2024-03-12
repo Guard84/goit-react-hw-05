@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
 import fetchTrendingMovies from "../assets/requests/trending-api.js";
 import MovieList from '../components/MovieList/MovieList.jsx';
-import fetchMovieDetails from '../assets/requests/details-api.js';
 
 const HomePage = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -22,17 +20,20 @@ const HomePage = () => {
 
   const handleMovieClick = async (movieId) => {
     try {
-      const movieDetails = await fetchMovieDetails(movieId);
-      return <Link to={`/movies/${movieId}`} state={{ movieDetails }} />;
+      window.location.href = `/movies/${movieId}`;
     } catch (error) {
-      console.error("Error fetching movie details:", error);
+      console.error("Error handling movie click:", error);
     }
-
   };
+
   return (
     <div>
       <h1 style={{fontSize: '24px', fontWeight: 'bold'}}>Trending Today</h1>
-      <MovieList movies={trendingMovies} onItemClick={handleMovieClick} />
+      {trendingMovies.length > 0 ? (
+        <MovieList movies={trendingMovies} onItemClick={handleMovieClick} />
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   );
 };

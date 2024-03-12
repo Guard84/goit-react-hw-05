@@ -53,7 +53,7 @@ const MovieDetailsPage = () => {
          <Link to={`/movies/${movieId}/reviews`} className={css.link}>Reviews</Link>
         </div>
       </div>
-      <Suspense fallback={<div>Loading subpage...</div>}>
+      <Suspense fallback={<div></div>}>
         <Outlet />
       </Suspense>
     </div>

@@ -14,7 +14,7 @@ const Navigation = lazy(() => import("./components/Navigation/Navigation"));
 function App() {
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div></div>}>
         <Navigation />
       </Suspense>
       <Suspense fallback={<div>Loading page...</div>}>
