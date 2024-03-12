@@ -7,41 +7,46 @@ import css from "./MoviesPage.module.css";
 const MoviesPage = () => {
   const [keyword, setKeyword] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [submitKeyword, setSubmitKeyword] = useState('');
-  const [searchParams] = useSearchParams();
+  const [searchError, setSearchError] = useState('');
 
+  const [searchParams] = useSearchParams();
   const urlKeyword = searchParams.get('keyword');
 
   useEffect(() => {
     if (urlKeyword) {
       setKeyword(urlKeyword);
-      setSubmitKeyword(urlKeyword);
+      handleSearch(urlKeyword);
     }
   }, [urlKeyword]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSubmitKeyword(keyword);
+  const handleSearch = async (query) => {
+    try {
+      const results = await fetchMoviesByKeyword(query);
+      if (results.length === 0) {
+        setSearchError('No movies found.');
+      } else {
+        setSearchError('');
+        setSearchResults(results);
+      }
+    } catch (error) {
+      console.error("Error searching movies:", error);
+      setSearchError('Error searching movies. Please try again later.');
+    }
   };
 
-  useEffect(() => {
-    const getSearchResults = async () => {
-      try {
-        const results = await fetchMoviesByKeyword(submitKeyword);
-        setSearchResults(results);
-      } catch (error) {
-        console.error("Error searching movies:", error);
-      }
-    };
-
-    if (submitKeyword) {
-      getSearchResults();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!keyword.trim()) {
+      setSearchError('Please enter a movie title.');
+      return;
     }
-  }, [submitKeyword]);
+    setSearchResults([]);
+    handleSearch(keyword);
+  };
 
   return (
     <div>
-      <form onSubmit={handleSearch} className={css.form}>
+      <form onSubmit={handleSubmit} className={css.form}>
         <input
           className={css.input}
           type="text"
@@ -51,6 +56,7 @@ const MoviesPage = () => {
         />
         <button type="submit" className={css.btn}>Search</button>
       </form>
+      {searchError && <p className={css.error}>{searchError}</p>}
       <MovieList movies={searchResults} />
     </div>
   );
