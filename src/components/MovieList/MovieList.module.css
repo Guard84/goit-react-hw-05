@@ -1,0 +1,12 @@
+.moviesList {
+  list-style-type: decimal;
+}
+
+.moviesListItem a {
+  color: black;
+}
+
+.moviesListItem a:hover {
+  color: rgb(71, 80, 80);
+  text-decoration: underline;
+}

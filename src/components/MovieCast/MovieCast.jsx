@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import fetchMovieCredits from '../../assets/requests/credits-api';
 import { useParams } from 'react-router-dom';
+import css from "./MovieCast.module.css";
 
 const baseUrl = 'https://image.tmdb.org/t/p/w500/';
 
@@ -23,8 +24,7 @@ const MovieCast = () => {
 
   return (
     <div>
-      <h2>Cast</h2>
-      <ul>
+      <ul className={css.castList}>
         {cast.map(actor => (
           <li key={actor.id}>
             {actor.profile_path && (

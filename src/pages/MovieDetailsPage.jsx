@@ -1,6 +1,8 @@
 import { useParams, Link, Outlet, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import fetchMovieDetails from '../assets/requests/details-api.js';
+import css from "./MovieDetailsPage.module.css";
+import { Suspense } from 'react';
 
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
@@ -24,29 +26,36 @@ const MovieDetailsPage = () => {
 
   return (
     <div>
-      <Link to={backLinkHref}>Go Back</Link>
+      <button type='button' className={css.backlink}><Link to={backLinkHref}>Go Back</Link></button>
       {movieDetails ? (
-        <div>
+        <div className={css.detailsPage}>
           {movieDetails.poster_path && (
             <img
+              width={"270px"}
               src={`https://image.tmdb.org/t/p/w500/${movieDetails.poster_path}`}
               alt="Movie Poster"
             />
           )}
-          <h3>{movieDetails.title}</h3>
-          <p>Overview: {movieDetails.overview}</p>
-          <p>User Score: {movieDetails.vote_count}%</p>
-          <p>Genres: {movieDetails.genres.map(genre => genre.name).join(', ')}</p>
+          <div>
+           <h3>{movieDetails.title}<span> ({movieDetails.release_date ? movieDetails.release_date.slice(0, 4) : ''})</span></h3>
+           <p>User Score: {Math.round(movieDetails.vote_average * 10)}%</p>
+           <p className={css.detailsTitle}>Overview</p><p>{movieDetails.overview}</p>
+           <p className={css.detailsTitle}>Genres</p><p>{movieDetails.genres.map(genre => genre.name).join(', ')}</p>
+          </div>
         </div>
       ) : (
         <p>Loading...</p>
       )}
-      <div>
-        <p>Additional Information</p>
-        <Link to={`/movies/${movieId}/cast`}>View Cast</Link>
-        <Link to={`/movies/${movieId}/reviews`}>View Reviews</Link>
+      <div className={css.additionalInfo}>
+        <p className={css.detailsTitle}>Additional Information</p>
+        <div className={css.linkContainer}>
+         <Link to={`/movies/${movieId}/cast`} className={css.link}>Cast</Link>
+         <Link to={`/movies/${movieId}/reviews`} className={css.link}>Reviews</Link>
+        </div>
       </div>
-      <Outlet />
+      <Suspense fallback={<div>Loading subpage...</div>}>
+        <Outlet />
+      </Suspense>
     </div>
   );
 };

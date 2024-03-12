@@ -31,7 +31,7 @@ const HomePage = () => {
   };
   return (
     <div>
-      <h2>Trending Today</h2>
+      <h1 style={{fontSize: '24px', fontWeight: 'bold'}}>Trending Today</h1>
       <MovieList movies={trendingMovies} onItemClick={handleMovieClick} />
     </div>
   );

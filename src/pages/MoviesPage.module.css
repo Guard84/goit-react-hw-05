@@ -1,0 +1,22 @@
+.form {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  background-color: rgb(65, 84, 248);
+  color: aliceblue;
+}
+
+.btn:hover {
+  background-color: blue;
+}
+
+.input {
+  outline: none;
+}
+
+.input:focus {
+  border-color: aqua;
+}

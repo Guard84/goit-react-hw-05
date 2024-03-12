@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const fetchMoviesByKeyword = async (keyword) => {
-  const url = `https://api.themoviedb.org/3/search/movie?query=${keyword}`;
+  const url = `https://api.themoviedb.org/3/search/movie`;
   const params = {
       query: keyword,
       api_key: "aa727112dc10caa22ab6691a558de004"
