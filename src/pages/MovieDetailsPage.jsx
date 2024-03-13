@@ -1,5 +1,5 @@
 import { useParams, Link, Outlet, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import fetchMovieDetails from '../assets/requests/details-api.js';
 import css from "./MovieDetailsPage.module.css";
 import { Suspense } from 'react';
@@ -8,6 +8,7 @@ const MovieDetailsPage = () => {
   const { movieId } = useParams();
   const location = useLocation();
   const [movieDetails, setMovieDetails] = useState(null);
+  const locationStateRef = useRef(location.state);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -22,7 +23,11 @@ const MovieDetailsPage = () => {
     fetchDetails();
   }, [movieId]);
 
-  const backLinkHref = location.state?.from ?? "/";
+  useEffect(() => {
+    locationStateRef.current = location.state;
+  }, [location.state]);
+
+  const backLinkHref = locationStateRef.current?.from ?? "/";
 
   return (
     <div>
