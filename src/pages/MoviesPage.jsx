@@ -9,7 +9,7 @@ const MoviesPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState('');
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const urlKeyword = searchParams.get('keyword');
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const MoviesPage = () => {
     };
 
     fetchTrending();
-  }, []);
+  }, [urlKeyword]);
 
   const handleSearch = async (query) => {
     try {
@@ -57,6 +57,7 @@ const MoviesPage = () => {
     setSearchResults([]);
     handleSearch(keyword);
     setKeyword('');
+    setSearchParams({ keyword });
   };
 
   return (
