@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import fetchMoviesByKeyword from '../assets/requests/search-api';
+import fetchTrendingMovies from '../assets/requests/trending-api';
 import MovieList from '../components/MovieList/MovieList';
 import { useSearchParams } from 'react-router-dom';
 import css from "./MoviesPage.module.css";
@@ -8,22 +9,17 @@ const MoviesPage = () => {
   const [keyword, setKeyword] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState('');
+  const [loadingTrending, setLoadingTrending] = useState(true);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const urlKeyword = searchParams.get('keyword');
 
   useEffect(() => {
-    if (urlKeyword) {
-      setKeyword(urlKeyword);
-      handleSearch(urlKeyword);
-    }
-  }, [urlKeyword]);
-
-  useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const movies = await fetchMoviesByKeyword('');
+        const movies = await fetchTrendingMovies();
         setSearchResults(movies);
+        setLoadingTrending(false);
       } catch (error) {
         console.error("Error fetching trending movies:", error);
         setSearchError('Error fetching trending movies. Please try again later.');
@@ -31,6 +27,13 @@ const MoviesPage = () => {
     };
 
     fetchTrending();
+  }, []);
+
+  useEffect(() => {
+    if (urlKeyword) {
+      setKeyword(urlKeyword);
+      handleSearch(urlKeyword);
+    }
   }, [urlKeyword]);
 
   const handleSearch = async (query) => {
@@ -48,14 +51,14 @@ const MoviesPage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!keyword.trim()) {
       setSearchError('Please enter a movie title.');
       return;
     }
     setSearchResults([]);
-    handleSearch(keyword);
+    await handleSearch(keyword);
     setKeyword('');
     setSearchParams({ keyword });
   };
@@ -73,7 +76,7 @@ const MoviesPage = () => {
         <button type="submit" className={css.btn}>Search</button>
       </form>
       {searchError && <p className={css.error}>{searchError}</p>}
-      <MovieList movies={searchResults}></MovieList>
+      {!loadingTrending && <MovieList movies={searchResults}></MovieList>}
     </div>
   );
 };
