@@ -9,17 +9,41 @@ const MoviesPage = () => {
   const [keyword, setKeyword] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState('');
-  const [loadingTrending, setLoadingTrending] = useState(true);
+  const [loadingSearch, setLoadingSearch] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const urlKeyword = searchParams.get('keyword');
+
+  useEffect(() => {
+    const handleSearch = async (query) => {
+      setLoadingSearch(true);
+      try {
+        const results = await fetchMoviesByKeyword(query);
+        if (results.length === 0) {
+          setSearchError('No movies found.');
+        } else {
+          setSearchError('');
+          setSearchResults(results);
+        }
+      } catch (error) {
+        console.error("Error searching movies:", error);
+        setSearchError('Error searching movies. Please try again later.');
+      } finally {
+        setLoadingSearch(false);
+      }
+    };
+
+    if (urlKeyword) {
+      setKeyword(urlKeyword);
+      handleSearch(urlKeyword);
+    }
+  }, [urlKeyword]);
 
   useEffect(() => {
     const fetchTrending = async () => {
       try {
         const movies = await fetchTrendingMovies();
         setSearchResults(movies);
-        setLoadingTrending(false);
       } catch (error) {
         console.error("Error fetching trending movies:", error);
         setSearchError('Error fetching trending movies. Please try again later.');
@@ -29,28 +53,6 @@ const MoviesPage = () => {
     fetchTrending();
   }, []);
 
-  useEffect(() => {
-    if (urlKeyword) {
-      setKeyword(urlKeyword);
-      handleSearch(urlKeyword);
-    }
-  }, [urlKeyword]);
-
-  const handleSearch = async (query) => {
-    try {
-      const results = await fetchMoviesByKeyword(query);
-      if (results.length === 0) {
-        setSearchError('No movies found.');
-      } else {
-        setSearchError('');
-        setSearchResults(results);
-      }
-    } catch (error) {
-      console.error("Error searching movies:", error);
-      setSearchError('Error searching movies. Please try again later.');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!keyword.trim()) {
@@ -58,8 +60,6 @@ const MoviesPage = () => {
       return;
     }
     setSearchResults([]);
-    await handleSearch(keyword);
-    setKeyword('');
     setSearchParams({ keyword });
   };
 
@@ -76,7 +76,11 @@ const MoviesPage = () => {
         <button type="submit" className={css.btn}>Search</button>
       </form>
       {searchError && <p className={css.error}>{searchError}</p>}
-      {!loadingTrending && <MovieList movies={searchResults}></MovieList>}
+      {loadingSearch ? (
+        <p>Loading...</p>
+      ) : (
+        <MovieList movies={searchResults}></MovieList>
+      )}
     </div>
   );
 };
