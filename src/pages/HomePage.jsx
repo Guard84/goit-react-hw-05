@@ -4,14 +4,20 @@ import MovieList from '../components/MovieList/MovieList.jsx';
 
 const HomePage = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchMovies = async () => {
+      setLoading(true);
       try {
         const movies = await fetchTrendingMovies();
         setTrendingMovies(movies);
       } catch (error) {
         console.error("Error fetching trending movies:", error);
+        setError('Error fetching trending movies. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -29,10 +35,12 @@ const HomePage = () => {
   return (
     <div>
       <h1 style={{fontSize: '24px', fontWeight: 'bold'}}>Trending Today</h1>
-      {trendingMovies.length > 0 ? (
-        <MovieList movies={trendingMovies} onItemClick={handleMovieClick} />
-      ) : (
+      {loading ? (
         <p>Loading...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : (
+        <MovieList movies={trendingMovies} onItemClick={handleMovieClick} />
       )}
     </div>
   );
